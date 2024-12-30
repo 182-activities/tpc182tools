@@ -16,4 +16,3 @@ PLANE_MAPS: dict[str, dict[str, range]] = {
             "50L-UX": {'induction1': range(0, 64), 'collection': range(64, 128)},
             "2T-UX": {'induction1': range(0, 64), 'collection': range(64, 128)},
         }
-
