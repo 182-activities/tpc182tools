@@ -2,15 +2,11 @@
 WIP.
 
 ## Data Readers & Writers
-- [ ] Write `DAQHDF5Reader` class.
-  - Provides:
-    - Base DUNE DAQ HDF5 file reading (requires `hdf5libs`),
-    - Fragment reading (requires `daqdataformats.Fragment`).
-- [ ] Write `WIBEthFrameReader` class.
+- [x] Write `WIBEthFrameReader` class.
   - Extends `DAQHDF5Reader`:
     - WIBEth frame reading (requires `fddetdataformats.WIBEthFrame`).
     - Requires channel mapping (requires `channelmaps.py`).
-- [ ] Write `HDF5Writer` class.
+- [ ] Write `HDF5Transcoder` class.
   - Write the contents to a general HDF5 file.
     - Centralizes when the `.bin` files come through the external trigger.
   - Does not require the DUNE DAQ environment to operate.
@@ -22,14 +18,14 @@ WIP.
   - _Could this have a better name?_
   - How can a user identify the difference between the data files?
     - Attach an attribute to the general files. If the user tries the DUNE DAQ reader and this attribute is present, raise an exception. Do the inverse for trying the general reader on DUNE DAQ HDF5s.
-- [ ] Write channel maps.
+- [x] Write channel maps.
   - Useful for the DUNE DAQ HDF5 files.
   - Available as global variables in `channelmaps.py`.
   - Needs to feature 3 view 50 L TPC, 2 view 50 L TPC, and 2 view 2T TPC.
     - `50-UVX`,
     - `50-UX`,
     - `2T-UX`.
-- [ ] Write channel--plane maps.
+- [x] Write channel--plane maps.
   - Available as global variable in `channelmaps.py`.
 
 ## Data Plotting
