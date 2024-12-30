@@ -18,8 +18,9 @@ classifiers = [
 ]
 dynamic = ["description"]
 dependencies = [
+	"click",
+	"h5py",
 	"numpy",
-	"h5py"
 ]
 
 [project.urls]
