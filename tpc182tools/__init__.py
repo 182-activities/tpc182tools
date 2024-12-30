@@ -6,3 +6,10 @@ from . import channelmaps
 from . import readers
 from . import transcoders
 from . import utils
+
+__all__ = [
+        "channelmaps",
+        "readers",
+        "transcoders",
+        "utils"
+        ]

@@ -2,6 +2,8 @@
 Data transcoders from the original DUNE DAQ HDF5 format.
 """
 
+__all__ = ["HDF5Transcoder"]
+
 # TPC 182 Tools
 from .readers import WIBEthFrameReader as _WIBEthFrameReader
 
