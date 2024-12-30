@@ -5,9 +5,6 @@ Data transcoders from the original DUNE DAQ HDF5 format.
 # TPC 182 Tools
 from .readers import WIBEthFrameReader
 
-# DUNE DAQ Modules
-from daqdataformats import Fragment  # Required to get the fragment timestamp.
-
 # Third-party Modules
 import h5py
 import numpy as np
@@ -56,6 +53,9 @@ class HDF5Transcoder(WIBEthFrameReader):
         Parameter:
             record (tuple[int, int]) : Record identifier.
         """
+        # Module that only gets used here. Allows for optional dependencies.
+        from daqdataformats import Fragment  # Required to get the fragment timestamp.
+
         # Get the record contents.
         adcs: NDArray[np.int_] = self.read_record(record)
         fragment: Fragment = self._h5_file.get_frag(record)
@@ -77,3 +77,6 @@ class HDF5Transcoder(WIBEthFrameReader):
         for record in self.records:
             self.transcode_record(record)
         return
+
+
+del WIBEthFrameReader, h5py, np, NDArray, os

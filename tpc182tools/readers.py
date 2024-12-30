@@ -3,7 +3,7 @@ TPC 182 data file readers. Makes use of the DUNE DAQ
 modules and requires the DUNE DAQ environment to operate.
 """
 
-from .channelmaps import CHANNEL_MAPS, PLANE_MAPS
+from . import channelmaps
 
 # Third Party Modules
 import numpy as np
@@ -67,7 +67,7 @@ class WIBEthFrameReader:
             map_name (str) : Name of the map to use. fiftyl_toolkit.ChannelMaps has the available maps.
         """
         try:
-            self._channel_map = np.array(CHANNEL_MAPS[map_name])
+            self._channel_map = np.array(channelmaps.CHANNEL_MAPS[map_name])
             self._inverse_map: NDArray = np.argsort(self._channel_map)
         except KeyError:
             raise KeyError(f"Given channel map name is not available. Use one of: {list(CHANNEL_MAPS.keys())}")
@@ -88,9 +88,9 @@ class WIBEthFrameReader:
             map_name (str) : Name of the map to use. fiftyl_toolkit.ChannelMaps has the available maps.
         """
         try:
-            self._plane_map = PLANE_MAPS[map_name]
+            self._plane_map = channelmaps.PLANE_MAPS[map_name]
         except KeyError:
-            raise KeyError(f"Given plane map name is not available. Use one of: {list(PLANE_MAPS.keys())}")
+            raise KeyError(f"Given plane map name is not available. Use one of: {list(channelmaps.PLANE_MAPS.keys())}")
         return
 
     @property
@@ -332,3 +332,5 @@ class HDF5Reader:
     def __len__(self):
         """ Length of the records for the given data file. """
         return len(self.h5)
+
+del np, NDArray, singledispatchmethod, os, channelmaps
