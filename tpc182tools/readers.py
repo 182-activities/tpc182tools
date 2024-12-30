@@ -5,11 +5,6 @@ modules and requires the DUNE DAQ environment to operate.
 
 from .channelmaps import CHANNEL_MAPS, PLANE_MAPS
 
-# DUNE DAQ Modules
-from daqdataformats import Fragment
-from hdf5libs import HDF5RawDataFile
-from rawdatautils.unpack.wibeth import np_array_adc
-
 # Third Party Modules
 import numpy as np
 from numpy.typing import NDArray
@@ -36,6 +31,10 @@ class WIBEthFrameReader:
             filename (str) : Path of data file to process.
             map_name (str) : Channel map to use when reading. Defaults to latest map available.
         """
+        # Module that only gets used here. Allows for optional dependencies.
+        from hdf5libs import HDF5RawDataFile
+
+        # Many of these attribute gets affirm that this is a DUNE-DAQ file.
         self._filename: str = os.path.expanduser(filename)
         self._h5_file: HDF5RawDataFile = HDF5RawDataFile(self._filename)
         self._records: list[tuple[int, int]] = self._h5_file.get_all_record_ids()
@@ -151,6 +150,10 @@ class WIBEthFrameReader:
         """
         Performs the reading after all the preprocessing.
         """
+        # Modules that only get used here. Allows for optional dependencies.
+        from daqdataformats import Fragment
+        from rawdatautils.unpack.wibeth import np_array_adc
+
         geo_ids: set[int] = self._h5_file.get_geo_ids(record)
         adcs: NDArray | None = None  # Don't know the shape of the upcoming fragment, so prepare later
         if len(geo_ids) == 0:
