@@ -6,12 +6,12 @@ WIP.
   - Extends `DAQHDF5Reader`:
     - WIBEth frame reading (requires `fddetdataformats.WIBEthFrame`).
     - Requires channel mapping (requires `channelmaps.py`).
-- [ ] Write `HDF5Transcoder` class.
+- [x] Write `HDF5Transcoder` class.
   - Write the contents to a general HDF5 file.
     - Centralizes when the `.bin` files come through the external trigger.
   - Does not require the DUNE DAQ environment to operate.
   - Uses `WIBEthFrameReader` to get the appropriate file contents.
-- [ ] Write `HDF5Reader` class.
+- [x] Write `HDF5Reader` class.
   - Read the contents of a general HDF5 file.
   - Does not require the DUNE DAQ environment to operate.
   - Must give the same result as `WIBEthFrameReader` on the original HDF5 file.
