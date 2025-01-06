@@ -23,7 +23,8 @@ class HDF5Transcoder(_WIBEthFrameReader):
     per trigger record, but lightens by reducing some of the data
     fragment and trigger fragment preservations.
     """
-    def __init__(self, filename: str, map_name: str) -> None:
+
+    def __init__(self, filename: str, map_name: str = "2T-UX") -> None:
         """
         Load the given data file in :filename: and set some preliminary attributes.
 
