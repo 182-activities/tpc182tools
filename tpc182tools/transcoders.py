@@ -61,7 +61,10 @@ class HDF5Transcoder(_WIBEthFrameReader):
 
         # Get the record contents.
         adcs: _NDArray[_np.int_] = self.read_record(record)
-        fragment: Fragment = self._h5_file.get_frag(record)
+
+        # Get the TriggerRecordHeader at its 0th component and save its window start time.
+        # All components should have the same window_begin value.
+        window_begin: int = self._h5_file.get_trh(record).at(0).window_begin
 
         # Transcode and save some metadata.
         record_number: int = record[0]  # Only first value is the record number.
@@ -70,7 +73,7 @@ class HDF5Transcoder(_WIBEthFrameReader):
                                                                   compression='gzip',
                                                                   compression_opts=9)
         dset.attrs['record_number'] = record_number
-        dset.attrs['timestamp'] = fragment.get_window_begin()
+        dset.attrs['timestamp'] = window_begin
         return
 
     def transcode_file(self) -> None:
