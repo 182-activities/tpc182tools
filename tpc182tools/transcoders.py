@@ -3,18 +3,18 @@ Data transcoders from the original DUNE DAQ HDF5 format.
 """
 
 # TPC 182 Tools
-from .readers import WIBEthFrameReader
+from .readers import WIBEthFrameReader as _WIBEthFrameReader
 
 # Third-party Modules
-import h5py
-import numpy as np
-from numpy.typing import NDArray
+import h5py as _h5py
+import numpy as _np
+from numpy.typing import NDArray as _NDArray
 
 # In-built Modules
-import os
+import os as _os
 
 
-class HDF5Transcoder(WIBEthFrameReader):
+class HDF5Transcoder(_WIBEthFrameReader):
     """
     This class transcodes a given DUNE DAQ HDF5 file to a more general
     HDF5 format. This comes with the cost of some additional padding
@@ -33,11 +33,11 @@ class HDF5Transcoder(WIBEthFrameReader):
         super().__init__(filename, map_name)
 
         # Prepare the transcode file.
-        full_path: str = os.path.expanduser(filename)
-        base_path: str = os.path.dirname(full_path)
+        full_path: str = _os.path.expanduser(filename)
+        base_path: str = _os.path.dirname(full_path)
         transcode_name: str = f"182enc_{self.run_id:06}-{self.file_index:06}_{self.creation_timestamp}.hdf5"
-        self._transcode_path: str = os.path.join(base_path, transcode_name)
-        self._transcode_file: h5py.File = h5py.File(self._transcode_path, mode='x')
+        self._transcode_path: str = _os.path.join(base_path, transcode_name)
+        self._transcode_file: _h5py.File = _h5py.File(self._transcode_path, mode='x')
 
         # Make the transcode file identifiable at the top level.
         self._transcode_file.attrs['tpc182tools'] = True
@@ -57,7 +57,7 @@ class HDF5Transcoder(WIBEthFrameReader):
         from daqdataformats import Fragment  # Required to get the fragment timestamp.
 
         # Get the record contents.
-        adcs: NDArray[np.int_] = self.read_record(record)
+        adcs: _NDArray[_np.int_] = self.read_record(record)
         fragment: Fragment = self._h5_file.get_frag(record)
 
         # Transcode and save some metadata.
@@ -77,6 +77,3 @@ class HDF5Transcoder(WIBEthFrameReader):
         for record in self.records:
             self.transcode_record(record)
         return
-
-
-del WIBEthFrameReader, h5py, np, NDArray, os

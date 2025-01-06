@@ -2,12 +2,12 @@
 Utility functions that are useful for processing the TPC 182 data.
 """
 
-import numpy as np
-from numpy.typing import NDArray
+__all__ = ["pedsub"]
+
+import numpy as _np
+from numpy.typing import NDArray as _NDArray
 
 
-def pedsub(array: NDArray, axis: int = 0) -> NDArray:
+def pedsub(array: _NDArray, axis: int = 0) -> _NDArray:
     """ Pedestal subtract the given array. """
-    return array - np.median(array, axis=axis)
-
-del np, NDArray
+    return array - _np.median(array, axis=axis)
