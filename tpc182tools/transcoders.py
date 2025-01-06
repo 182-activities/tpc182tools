@@ -62,10 +62,10 @@ class HDF5Transcoder(WIBEthFrameReader):
 
         # Transcode and save some metadata.
         record_number: int = record[0]  # Only first value is the record number.
-        dset: h5py.Dataset = self._transcode_file(f"Record{record_number:04}",
-                                                  data=adcs.astype(np.uint16),
-                                                  compression='gzip',
-                                                  compression_opts=9)
+        dset: _h5py.Dataset = self._transcode_file.create_dataset(f"Record{record_number:04}",
+                                                                  data=adcs.astype(_np.uint16),
+                                                                  compression='gzip',
+                                                                  compression_opts=9)
         dset.attrs['record_number'] = record_number
         dset.attrs['timestamp'] = fragment.get_window_begin()
         return
