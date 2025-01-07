@@ -23,6 +23,15 @@ class WIBEthFrameReader:
 
     Given a data file to process, this class is able to read the data using various queries, such as by plane name,
     channel number, and all channels.
+
+    Attributes:
+        creation_timestamp              (int) : The timestamp that this file starting writing at.
+        file_index                      (int) : The file index this file was generated from.
+                                                A long data run may create multiple files.
+        last_record_number  (tuple[int, int]) : The record identifier of the most recently read record.
+        last_record_timestamp           (int) : The start timestamp of the most recently read record.
+        records      (tuple[tuple[int, int]]) : A tuple of all the record identifiers (tuple[int, int]) in this file.
+        run_id                          (int) : The data run number this file was generated from.
     """
     _channels_per_link = 64
 
@@ -40,8 +49,9 @@ class WIBEthFrameReader:
         # Many of these attribute gets affirm that this is a DUNE-DAQ file.
         self._filename: str = _os.path.expanduser(filename)
         self._h5_file: HDF5RawDataFile = HDF5RawDataFile(self._filename)
-        self._records: list[tuple[int, int]] = self._h5_file.get_all_record_ids()
-        self._last_read_record: tuple[int, int] | None = None
+        self.records: tuple[tuple[int, int]] = tuple(self._h5_file.get_all_record_ids())
+        self.last_read_record: tuple[int, int] | None = None
+        self.last_record_timestamp: int | None = None
 
         self._creation_timestamp: int = int(self._h5_file.get_attribute("creation_timestamp"))
         self._run_id: int = self._h5_file.get_int_attribute("run_number")
@@ -96,37 +106,13 @@ class WIBEthFrameReader:
     def run_id(self):
         return self._run_id
 
-    @run_id.getter
-    def run_id(self) -> int:
-        """ The run number for the given data file. """
-        return self._run_id
-
     @property
     def file_index(self):
-        return self._file_index
-
-    @file_index.getter
-    def file_index(self) -> int:
-        """ The file index of the given data file. """
         return self._file_index
 
     @property
     def creation_timestamp(self):
         return self._creation_timestamp
-
-    @creation_timestamp.getter
-    def creation_timestamp(self) -> int:
-        """ Epoch timestamp for when the file was created. """
-        return self._creation_timestamp
-
-    @property
-    def records(self):
-        return self._records
-
-    @records.getter
-    def records(self) -> list[tuple[int, int]]:
-        """ A list of records within the given file. """
-        return self._records
 
     def read_record(self, record: tuple[int, int], *args) -> _NDArray:
         """
@@ -138,7 +124,7 @@ class WIBEthFrameReader:
 
         Returns a 2D np.ndarray of channel waveforms.
         """
-        if record in self._records:
+        if record in self.records:
             self._last_read_record = record
         else:
             raise IndexError("This record ID is not available in the current data set.")
@@ -177,6 +163,10 @@ class WIBEthFrameReader:
                 tmp_adc = tmp_adc[:adcs.shape[0], :]
 
             adcs[:, self._inverse_map[map_bounds[0]:map_bounds[1]]] = tmp_adc
+
+        # Set the last_*_record values.
+        self.last_record_number = record
+        self.last_record_timestamp = frag.get_window_begin()
 
         assert isinstance(adcs, _np.ndarray)
         return adcs[:, mask]
@@ -252,7 +242,7 @@ class WIBEthFrameReader:
 
     def __len__(self):
         """ Length of the records for the given data file. """
-        return len(self._records)
+        return len(self.records)
 
 
 class HDF5Reader:
@@ -260,6 +250,15 @@ class HDF5Reader:
     The general TPC 182 HDF5 reader. This reader class does not need the
     DUNE DAQ software environments, but it can only read the transcoded
     data files made by `HDF5Transcoder`.
+
+    Attributes:
+        creation_timestamp           (int) : The timestamp for when this file first started writing.
+        file_index                   (int) : The file index that this file was generated from.
+        last_record_number    (None | int) : The record number of the most recently read record.
+        last_record_timestamp (None | int) : The starting timestamp of the most recently read record.
+        records               (tuple[str]) : A tuple of all the records available to read in this file.
+        run_id                       (int) : The data run number this file was generated from.
+                                             A long run may generate multiple files.
     """
     def __init__(self, filename: str):
         import h5py
@@ -268,35 +267,20 @@ class HDF5Reader:
         self._creation_timestamp: int = self.h5.attrs['creation_timestamp']
         self._run_number: int = self.h5.attrs['run_id']
         self._file_index: int = self.h5.attrs['file_index']
-        self._records: list[str] = list(self.h5.keys())
+        self.records: tuple[str] = tuple(self.h5.keys())
+
+        # Some read record metadata
+        self.last_record_timestamp: None | int = None
+        self.last_record_number: None | int = None
         return
 
     @property
     def run_id(self):
         return self._run_id
 
-    @run_id.getter
-    def run_id(self) -> int:
-        """ The run number for the given data file. """
-        return self._run_id
-
     @property
     def file_index(self):
         return self._file_index
-
-    @file_index.getter
-    def file_index(self) -> int:
-        """ The file index for the given data file. """
-        return self._file_index
-
-    @property
-    def records(self):
-        return self._records
-
-    @records.getter
-    def records(self) -> list[str]:
-        """ The list of record paths in this file. """
-        return self._records
 
     def read_record(self, record: str) -> _NDArray[_np.int16]:
         """
@@ -311,15 +295,13 @@ class HDF5Reader:
         if dset is None:
             raise IndexError(f"{record} is not available in this file.")
 
+        self.last_record_timestamp = dset.attrs['timestamp']
+        self.last_record_number = dset.attrs['record_number']
+
         return _np.array(dset)
 
     @property
     def creation_timestamp(self):
-        return self._creation_timestamp
-
-    @creation_timestamp.getter
-    def creation_timestamp(self) -> int:
-        """ The creation timestamp for the given data file. """
         return self._creation_timestamp
 
     def _check_tpc182tools(self) -> None:
