@@ -56,9 +56,6 @@ class HDF5Transcoder(_WIBEthFrameReader):
         Parameter:
             record (tuple[int, int]) : Record identifier.
         """
-        # Module that only gets used here. Allows for optional dependencies.
-        from daqdataformats import Fragment  # Required to get the fragment timestamp.
-
         # Get the record contents.
         adcs: _NDArray[_np.int_] = self.read_record(record)
 
