@@ -83,7 +83,8 @@ class WIBEthFrameReader:
             self._channel_map = _np.array(_channelmaps.CHANNEL_MAPS[map_name])
             self._inverse_map: _NDArray = _np.argsort(self._channel_map)
         except KeyError:
-            raise KeyError(f"Given channel map name is not available. Use one of: {list(_channelmaps.CHANNEL_MAPS.keys())}")
+            raise KeyError("Given channel map name is not available. Use one of: \n"
+                           f"{list(_channelmaps.CHANNEL_MAPS.keys())}")
         return
 
     def get_plane_map(self) -> dict[str, range]:
@@ -123,8 +124,11 @@ class WIBEthFrameReader:
         Extract data from the given HDF5 data file.
 
         Parameters:
-            record (tuple[int, int]) : Trigger record to read from the current dataset.
-            *args (int | ArrayLike | str | None) : Channels to read from, array-like, plane names, channel number, or empty for all.
+            record  (tuple[int, int]) : Trigger record to read from the
+                                        current dataset.
+            *args   (int | ArrayLike | str | None) :
+                    Channels to read from, array-like, plane names,
+                    channel number, or empty for all.
 
         Returns a 2D np.ndarray of channel waveforms.
         """
