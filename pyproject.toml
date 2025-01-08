@@ -24,3 +24,10 @@ dependencies = [
 
 [project.urls]
 Home = "https://github.com/182-activities/tpc182tools"
+
+[external]
+optional-dependencies = [
+	"pkg:github/DUNE-DAQ/daqdataformats",
+	"pkg:github/DUNE-DAQ/hdf5libs",
+	"pkg:github/DUNE-DAQ/rawdatautils",
+]
