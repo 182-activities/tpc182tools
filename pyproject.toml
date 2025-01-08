@@ -18,7 +18,6 @@ classifiers = [
 ]
 dynamic = ["description"]
 dependencies = [
-	"click",
 	"h5py",
 	"numpy",
 ]
