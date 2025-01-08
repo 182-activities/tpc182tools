@@ -44,7 +44,11 @@ class WIBEthFrameReader:
             map_name (str) : Channel map to use when reading. Defaults to latest map available.
         """
         # Module that only gets used here. Allows for optional dependencies.
-        from hdf5libs import HDF5RawDataFile
+        try:
+            from hdf5libs import HDF5RawDataFile
+        except ImportError as exc:
+            raise ImportError("Unable to import DUNE-DAQ module. Must be in an environment with DUNE-DAQ python "
+                              f"modules being available. {exc}")
 
         # Many of these attribute gets affirm that this is a DUNE-DAQ file.
         self._filename: str = _os.path.expanduser(filename)
@@ -140,8 +144,12 @@ class WIBEthFrameReader:
         Performs the reading after all the preprocessing.
         """
         # Modules that only get used here. Allows for optional dependencies.
-        from daqdataformats import Fragment
-        from rawdatautils.unpack.wibeth import np_array_adc
+        try:
+            from daqdataformats import Fragment
+            from rawdatautils.unpack.wibeth import np_array_adc
+        except ImportError as exc:
+            raise ImportError("Unable to import DUNE-DAQ module. Must be in an environment with DUNE-DAQ python "
+                              f"modules being available. {exc}")
 
         geo_ids: set[int] = self._h5_file.get_geo_ids(record)
         adcs: _NDArray | None = None  # Don't know the shape of the upcoming fragment, so prepare later
